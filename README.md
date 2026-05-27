@@ -6,4 +6,4 @@ Fill in the form fields (week, highlights, metrics, focus areas, and notes), the
 
 No backend required — runs entirely in the browser.
 
-**Live tool:** https://kadenyeung.com/vv-report-generator/
+**Live tool:** https://kadenyeung.github.io/vv-report-generator/
