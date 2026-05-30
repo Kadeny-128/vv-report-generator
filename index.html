@@ -1,609 +1,134 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-report-theme="professional">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Victory Velocity — Weekly Report Builder</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg: #181818;
-      --text: #ffffff;
-      --muted: rgba(255,255,255,0.65);
-      --accent: rgba(255,255,255,0.15);
-      --display: 'Cormorant Garamond', Georgia, serif;
-      --ui: 'Letter Gothic Std', 'Courier New', monospace;
-    }
-
-    html, body {
-      height: 100%;
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--display);
-      font-size: 16px;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    body {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    /* ── App Header ────────────────────────── */
-    .app-header {
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 32px;
-      border-bottom: 1px solid var(--accent);
-    }
-
-    .app-wordmark {
-      font-family: var(--display);
-      font-weight: 300;
-      font-size: 13px;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-    }
-
-    .app-wordmark strong {
-      font-weight: 400;
-      color: var(--text);
-    }
-
-    .export-btn {
-      font-family: var(--ui);
-      font-size: 10px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      background: var(--text);
-      color: var(--bg);
-      border: none;
-      padding: 10px 28px;
-      cursor: pointer;
-      transition: opacity 0.15s;
-    }
-
-    .export-btn:hover { opacity: 0.85; }
-
-    /* ── Main Layout ───────────────────────── */
-    .main {
-      flex: 1;
-      display: flex;
-      overflow: hidden;
-    }
-
-    /* ── Form Panel ────────────────────────── */
-    .form-panel {
-      width: 400px;
-      flex-shrink: 0;
-      border-right: 1px solid var(--accent);
-      overflow-y: auto;
-      padding: 36px 28px 60px;
-    }
-
-    .form-section {
-      margin-bottom: 44px;
-    }
-
-    .section-label {
-      font-family: var(--ui);
-      font-size: 13px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--muted);
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--accent);
-      margin-bottom: 22px;
-    }
-
-    .field {
-      margin-bottom: 14px;
-    }
-
-    .field-label {
-      display: block;
-      font-family: var(--ui);
-      font-size: 12px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 5px;
-    }
-
-    input[type="text"],
-    input[type="date"],
-    input[type="number"],
-    textarea,
-    select {
-      width: 100%;
-      background: transparent;
-      border: 1px solid var(--accent);
-      color: #ffffff;
-      font-family: var(--display);
-      font-size: 14px;
-      font-weight: 400;
-      padding: 8px 10px;
-      outline: none;
-      appearance: none;
-      -webkit-appearance: none;
-    }
-
-    input[type="text"]:focus,
-    input[type="date"]:focus,
-    input[type="number"]:focus,
-    textarea:focus,
-    select:focus {
-      border-color: rgba(255,255,255,0.45);
-    }
-
-    input::placeholder,
-    textarea::placeholder { color: rgba(255,255,255,0.2); }
-
-    input[type="date"]::-webkit-calendar-picker-indicator {
-      filter: invert(1);
-      opacity: 0.3;
-      cursor: pointer;
-    }
-
-    select {
-      background: var(--bg);
-      font-family: var(--ui);
-      font-size: 9px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      cursor: pointer;
-    }
-
-    select option { background: #222; color: #fff; }
-
-    textarea { resize: vertical; font-style: italic; line-height: 1.6; }
-
-    /* ── Metric Pairs ──────────────────────── */
-    .metric-group { margin-bottom: 18px; }
-
-    .metric-group-label {
-      font-family: var(--ui);
-      font-size: 12px;
-      letter-spacing: 0.10em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 7px;
-    }
-
-    .metric-pair {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-    }
-
-    .metric-pair .field { margin-bottom: 0; }
-
-    /* ── Spot Check Table ──────────────────── */
-    .spot-wrap { overflow-x: auto; margin-bottom: 12px; }
-
-    table.spot-form {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 340px;
-    }
-
-    table.spot-form th {
-      font-family: var(--ui);
-      font-size: 11px;
-      letter-spacing: 0.11em;
-      text-transform: uppercase;
-      color: var(--muted);
-      text-align: left;
-      padding: 0 4px 8px;
-      border-bottom: 1px solid var(--accent);
-    }
-
-    table.spot-form td {
-      padding: 3px 2px;
-      vertical-align: middle;
-    }
-
-    table.spot-form input,
-    table.spot-form select {
-      padding: 5px 6px;
-      font-size: 14px;
-    }
-
-    table.spot-form select {
-      font-size: 8px;
-    }
-
-    /* ── Checklist Items ───────────────────── */
-    .checklist-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-
-    .check-input {
-      appearance: none;
-      -webkit-appearance: none;
-      width: 16px;
-      height: 16px;
-      min-width: 16px;
-      border: 1px solid var(--accent);
-      background: transparent;
-      cursor: pointer;
-      position: relative;
-    }
-
-    .check-input:checked { background: var(--text); border-color: var(--text); }
-
-    .check-input:checked::after {
-      content: '';
-      position: absolute;
-      top: 2px; left: 5px;
-      width: 4px; height: 7px;
-      border: 1.5px solid var(--bg);
-      border-top: none; border-left: none;
-      transform: rotate(45deg);
-    }
-
-    .checklist-row input[type="text"] { flex: 1; }
-
-    /* ── Priority Rows ─────────────────────── */
-    .priority-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
-
-    .priority-num {
-      font-family: var(--ui);
-      font-size: 9px;
-      color: var(--muted);
-      letter-spacing: 0.1em;
-      flex-shrink: 0;
-      min-width: 22px;
-    }
-
-    .priority-row input[type="text"] { flex: 1; }
-
-    /* ── Add Row Button ────────────────────── */
-    .add-btn {
-      font-family: var(--ui);
-      font-size: 8px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--muted);
-      background: transparent;
-      border: 1px solid var(--accent);
-      padding: 7px 16px;
-      cursor: pointer;
-      margin-top: 4px;
-      transition: color 0.15s, border-color 0.15s;
-    }
-
-    .add-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.4); }
-
-    /* ── Preview Panel ─────────────────────── */
-    .preview-panel {
-      flex: 1;
-      overflow-y: auto;
-      background: var(--bg);
-    }
-
-    .preview-page {
-      padding: 64px 72px 80px;
-      max-width: 860px;
-      margin: 0 auto;
-    }
-
-    /* Preview: Header */
-    .pv-brand {
-      font-family: var(--display);
-      font-weight: 300;
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      margin-bottom: 56px;
-      text-align: right;
-    }
-
-    .pv-report-tag {
-      font-family: var(--ui);
-      font-size: 13px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 10px;
-    }
-
-    .pv-title {
-      font-family: var(--display);
-      font-weight: 300;
-      font-size: 76px;
-      line-height: 0.95;
-      letter-spacing: -0.01em;
-      margin-bottom: 18px;
-    }
-
-    .pv-subtitle {
-      font-family: var(--display);
-      font-style: italic;
-      font-weight: 300;
-      font-size: 20px;
-      color: var(--muted);
-    }
-
-    /* Preview: Sections */
-    .pv-section { margin-top: 56px; }
-
-    .pv-section-label {
-      font-family: var(--ui);
-      font-size: 13px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--muted);
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--accent);
-      margin-bottom: 24px;
-    }
-
-    /* Preview: Metrics */
-    .pv-metrics {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1px;
-      background: var(--accent);
-      border: 1px solid var(--accent);
-    }
-
-    .pv-metric-card {
-      background: var(--bg);
-      padding: 22px 18px 18px;
-    }
-
-    .pv-metric-name {
-      font-family: var(--ui);
-      font-size: 12px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 12px;
-    }
-
-    .pv-metric-value {
-      font-family: var(--display);
-      font-weight: 300;
-      font-size: 38px;
-      line-height: 1;
-      margin-bottom: 8px;
-      word-break: break-all;
-    }
-
-    .pv-metric-delta {
-      font-family: var(--ui);
-      font-size: 8px;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-    }
-
-    /* Preview: Spot check table */
-    table.pv-spot {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    table.pv-spot th {
-      font-family: var(--ui);
-      font-size: 11px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      text-align: left;
-      padding: 0 14px 10px 0;
-      border-bottom: 1px solid var(--accent);
-    }
-
-    table.pv-spot td {
-      font-family: var(--display);
-      font-size: 20px;
-      padding: 13px 14px 13px 0;
-      border-bottom: 1px solid var(--accent);
-      vertical-align: top;
-      line-height: 1.4;
-    }
-
-    .status-badge {
-      font-family: var(--ui);
-      font-size: 7px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      padding: 4px 8px;
-      display: inline-block;
-      white-space: nowrap;
-    }
-
-    .badge-no    { color: var(--muted); border: 1px solid var(--accent); }
-    .badge-part  { color: var(--text);  border: 1px solid var(--text); }
-    .badge-yes   { color: var(--bg);    background: var(--text); }
-
-    /* Preview: Checklist */
-    .pv-checklist { list-style: none; }
-
-    .pv-check-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 14px;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--accent);
-      font-family: var(--display);
-      font-size: 15px;
-      line-height: 1.4;
-    }
-
-    .pv-check-box {
-      width: 15px;
-      height: 15px;
-      min-width: 15px;
-      border: 1px solid var(--accent);
-      margin-top: 2px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .pv-check-box.done { background: var(--text); border-color: var(--text); }
-
-    /* Preview: Priorities */
-    .pv-priorities { list-style: none; }
-
-    .pv-priority-item {
-      display: flex;
-      gap: 18px;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--accent);
-      font-family: var(--display);
-      font-size: 15px;
-    }
-
-    .pv-num {
-      font-family: var(--ui);
-      font-size: 8px;
-      letter-spacing: 0.1em;
-      color: var(--muted);
-      flex-shrink: 0;
-      min-width: 20px;
-      padding-top: 3px;
-    }
-
-    /* Preview: Notes */
-    .pv-notes {
-      font-family: var(--display);
-      font-style: italic;
-      font-weight: 300;
-      font-size: 15px;
-      color: var(--muted);
-      line-height: 1.7;
-    }
-
-    /* Preview: Footer */
-    .pv-footer {
-      margin-top: 72px;
-      padding-top: 18px;
-      border-top: 1px solid var(--accent);
-      display: flex;
-      justify-content: space-between;
-      font-family: var(--ui);
-      font-size: 8px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-
-    /* ── Scrollbars ────────────────────────── */
-    ::-webkit-scrollbar { width: 3px; height: 3px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--accent); }
-
-    /* ── Print ─────────────────────────────── */
-    @media print {
-      @page { margin: 0; }
-
-      html, body {
-        height: auto;
-        overflow: visible;
-        background: #181818 !important;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-      }
-
-      * {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-      }
-
-      .app-header,
-      .form-panel { display: none !important; }
-
-      .main {
-        display: block;
-        overflow: visible;
-      }
-
-      .preview-panel {
-        width: 100%;
-        overflow: visible;
-        height: auto;
-        background: #181818 !important;
-      }
-
-      .preview-page {
-        padding: 52px 64px 64px;
-        max-width: 100%;
-      }
-
-      .pv-metrics {
-        break-inside: avoid;
-      }
-
-      table.pv-spot { break-inside: auto; }
-      table.pv-spot tr { break-inside: avoid; }
-    }
-  </style>
+  <meta name="description" content="Build, track and export professional GEO &amp; SEO weekly performance reports for Victory Velocity clients.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
 <!-- ═══════════════════════════════════════ App Header -->
 <header class="app-header">
-  <div class="app-wordmark"><strong>Victory Velocity</strong> — Weekly Report Builder</div>
-  <button class="export-btn" onclick="window.print()">Export PDF</button>
-</header>
+  <div class="app-brand">
+    <span class="app-wordmark"><strong>Victory Velocity</strong> — Weekly Report Builder</span>
+    <span class="save-state" id="saveState" aria-live="polite">Saved</span>
+  </div>
 
-<div class="main">
+  <div class="app-actions">
+    <button class="icon-btn" id="btnVoice" type="button" aria-pressed="false" title="Voice dictation — fills the focused field">
+      <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z" fill="currentColor"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
+      <span class="lbl">Voice</span>
+    </button>
 
-  <!-- ═══════════════════════════════════════ Form Panel -->
-  <div class="form-panel" id="formPanel">
+    <div class="seg" role="group" aria-label="Report theme">
+      <button class="seg-btn" id="themeProfessional" type="button" data-theme="professional">Professional</button>
+      <button class="seg-btn" id="themeEditorial" type="button" data-theme="editorial">Editorial</button>
+    </div>
 
-    <!-- Report Info -->
-    <div class="form-section">
-      <div class="section-label">Report Info</div>
-
-      <div class="field">
-        <label class="field-label">Client Name</label>
-        <input type="text" id="f-client" placeholder="e.g. Bloom &amp; Give" oninput="sync()">
-      </div>
-
-      <div class="field">
-        <label class="field-label">Week Of</label>
-        <input type="date" id="f-week" oninput="sync()">
-      </div>
-
-      <div class="field">
-        <label class="field-label">Prepared By</label>
-        <input type="text" id="f-preparedby" value="Victory Velocity" oninput="sync()">
+    <div class="menu-wrap">
+      <button class="icon-btn" id="btnData" type="button" aria-haspopup="true" aria-expanded="false">Data ▾</button>
+      <div class="menu" id="dataMenu" role="menu" hidden>
+        <button type="button" role="menuitem" data-action="save-all">Download backup (.json)</button>
+        <button type="button" role="menuitem" data-action="load-all">Import backup (.json)</button>
+        <button type="button" role="menuitem" data-action="export-report">Export this report (.json)</button>
+        <hr>
+        <button type="button" role="menuitem" data-action="reset-demo" class="danger">Reset to demo data</button>
       </div>
     </div>
 
+    <button class="export-btn" id="btnPrint" type="button">Export PDF</button>
+  </div>
+</header>
+
+<div class="main" id="main" data-mobile-view="form">
+
+  <!-- ═══════════════════════════════════════ Form Panel -->
+  <aside class="form-panel" id="formPanel" aria-label="Report editor">
+
+    <!-- Workspace -->
+    <section class="form-section">
+      <div class="section-label">Workspace</div>
+
+      <div class="field">
+        <label class="field-label" for="ws-client">Client</label>
+        <div class="row-inline">
+          <select id="ws-client" aria-label="Select client"></select>
+          <button class="mini-btn" type="button" id="ws-client-new" title="Add a new client" aria-label="Add client">＋</button>
+          <button class="mini-btn" type="button" id="ws-client-rename" title="Rename client" aria-label="Rename client">✎</button>
+          <button class="mini-btn" type="button" id="ws-client-del" title="Delete client" aria-label="Delete client">🗑</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="ws-week">Reporting week</label>
+        <div class="row-inline">
+          <select id="ws-week" aria-label="Select reporting week"></select>
+          <button class="mini-btn" type="button" id="ws-week-new" title="New week (carries priorities forward &amp; sets baseline)" aria-label="New week">＋</button>
+          <button class="mini-btn" type="button" id="ws-week-dup" title="Duplicate this week" aria-label="Duplicate week">⧉</button>
+          <button class="mini-btn" type="button" id="ws-week-del" title="Delete this week" aria-label="Delete week">🗑</button>
+        </div>
+      </div>
+
+      <div class="ws-meta" id="ws-range"></div>
+    </section>
+
+    <!-- Report Info -->
+    <section class="form-section">
+      <div class="section-label">Report Info</div>
+
+      <div class="field">
+        <label class="field-label" for="f-week">Week starting</label>
+        <input type="date" id="f-week" data-bind="weekStart">
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="f-domain">Client domain</label>
+        <input type="text" id="f-domain" data-bind="@client.domain" placeholder="e.g. bloomandgive.ca">
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="f-preparedby">Prepared by</label>
+        <input type="text" id="f-preparedby" data-bind="@client.preparedBy" placeholder="Victory Velocity">
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="f-logo">Client logo <span class="hint">optional</span></label>
+        <div class="row-inline">
+          <input type="file" id="f-logo" accept="image/png,image/jpeg,image/svg+xml,image/webp" class="file-input">
+          <button class="mini-btn" type="button" id="f-logo-clear" title="Remove logo" aria-label="Remove logo">×</button>
+        </div>
+        <div class="logo-preview" id="logoPreview" hidden></div>
+      </div>
+    </section>
+
+    <!-- Executive Summary -->
+    <section class="form-section">
+      <div class="section-label">Executive Summary</div>
+      <div class="field has-mic">
+        <textarea id="f-exec" rows="4" data-bind="execSummary" placeholder="One short paragraph: the headline story of the week…"></textarea>
+        <button class="mic-btn" type="button" data-mic="#f-exec" title="Dictate into this field" aria-label="Dictate executive summary"></button>
+      </div>
+    </section>
+
     <!-- Search Console Metrics -->
-    <div class="form-section">
+    <section class="form-section">
       <div class="section-label">Search Console Metrics</div>
 
       <div class="metric-group">
         <div class="metric-group-label">Total Impressions</div>
         <div class="metric-pair">
           <div class="field">
-            <label class="field-label">This Week</label>
-            <input type="number" id="f-imp-w" placeholder="0" min="0" oninput="sync()">
+            <label class="field-label" for="f-imp-w">This week</label>
+            <input type="number" id="f-imp-w" data-bind="metrics.imp.w" placeholder="0" min="0" inputmode="numeric">
           </div>
           <div class="field">
-            <label class="field-label">Baseline</label>
-            <input type="number" id="f-imp-b" placeholder="0" min="0" oninput="sync()">
+            <label class="field-label" for="f-imp-b">Baseline <span class="auto-badge" data-auto="imp" hidden>auto</span></label>
+            <input type="number" id="f-imp-b" data-bind="metrics.imp.b" placeholder="0" min="0" inputmode="numeric">
           </div>
         </div>
       </div>
@@ -612,26 +137,29 @@
         <div class="metric-group-label">Total Clicks</div>
         <div class="metric-pair">
           <div class="field">
-            <label class="field-label">This Week</label>
-            <input type="number" id="f-clk-w" placeholder="0" min="0" oninput="sync()">
+            <label class="field-label" for="f-clk-w">This week</label>
+            <input type="number" id="f-clk-w" data-bind="metrics.clk.w" placeholder="0" min="0" inputmode="numeric">
           </div>
           <div class="field">
-            <label class="field-label">Baseline</label>
-            <input type="number" id="f-clk-b" placeholder="0" min="0" oninput="sync()">
+            <label class="field-label" for="f-clk-b">Baseline <span class="auto-badge" data-auto="clk" hidden>auto</span></label>
+            <input type="number" id="f-clk-b" data-bind="metrics.clk.b" placeholder="0" min="0" inputmode="numeric">
           </div>
         </div>
       </div>
 
       <div class="metric-group">
-        <div class="metric-group-label">Avg. CTR (%)</div>
+        <div class="metric-group-label">
+          Avg. CTR (%)
+          <label class="auto-toggle"><input type="checkbox" id="f-ctr-auto" data-bind="metrics.ctrAuto"> auto</label>
+        </div>
         <div class="metric-pair">
           <div class="field">
-            <label class="field-label">This Week</label>
-            <input type="number" id="f-ctr-w" placeholder="0.00" min="0" step="0.01" oninput="sync()">
+            <label class="field-label" for="f-ctr-w">This week</label>
+            <input type="number" id="f-ctr-w" data-bind="metrics.ctr.w" placeholder="0.00" min="0" step="0.01" inputmode="decimal">
           </div>
           <div class="field">
-            <label class="field-label">Baseline</label>
-            <input type="number" id="f-ctr-b" placeholder="0.00" min="0" step="0.01" oninput="sync()">
+            <label class="field-label" for="f-ctr-b">Baseline <span class="auto-badge" data-auto="ctr" hidden>auto</span></label>
+            <input type="number" id="f-ctr-b" data-bind="metrics.ctr.b" placeholder="0.00" min="0" step="0.01" inputmode="decimal">
           </div>
         </div>
       </div>
@@ -640,344 +168,110 @@
         <div class="metric-group-label">Avg. Position</div>
         <div class="metric-pair">
           <div class="field">
-            <label class="field-label">This Week</label>
-            <input type="number" id="f-pos-w" placeholder="0.0" min="0" step="0.1" oninput="sync()">
+            <label class="field-label" for="f-pos-w">This week</label>
+            <input type="number" id="f-pos-w" data-bind="metrics.pos.w" placeholder="0.0" min="0" step="0.1" inputmode="decimal">
           </div>
           <div class="field">
-            <label class="field-label">Baseline</label>
-            <input type="number" id="f-pos-b" placeholder="0.0" min="0" step="0.1" oninput="sync()">
+            <label class="field-label" for="f-pos-b">Baseline <span class="auto-badge" data-auto="pos" hidden>auto</span></label>
+            <input type="number" id="f-pos-b" data-bind="metrics.pos.b" placeholder="0.0" min="0" step="0.1" inputmode="decimal">
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- AI Engine Spot Checks -->
-    <div class="form-section">
-      <div class="section-label">AI Engine Spot Checks</div>
+    <!-- GEO / AI Engine Spot Checks -->
+    <section class="form-section">
+      <div class="section-label">GEO · AI Engine Spot Checks</div>
       <div class="spot-wrap">
         <table class="spot-form">
           <thead>
             <tr>
-              <th style="width:38%">Query</th>
-              <th style="width:22%">Engine</th>
-              <th style="width:20%">Status</th>
+              <th class="th-drag"></th>
+              <th style="width:34%">Query</th>
+              <th style="width:20%">Engine</th>
+              <th style="width:18%">Cited?</th>
               <th>Notes</th>
+              <th class="th-act"></th>
             </tr>
           </thead>
           <tbody id="spotRows"></tbody>
         </table>
       </div>
-      <button class="add-btn" onclick="addSpot()">+ Add Row</button>
-    </div>
+      <button class="add-btn" type="button" data-add="spots">+ Add Query</button>
+    </section>
+
+    <!-- Highlights / Wins -->
+    <section class="form-section" data-optional="highlights">
+      <div class="section-label">
+        Highlights / Wins
+        <button class="toggle-sec" type="button" data-toggle="highlights">hide</button>
+      </div>
+      <div class="opt-body">
+        <div id="highlightRows"></div>
+        <button class="add-btn" type="button" data-add="highlights">+ Add Highlight</button>
+      </div>
+    </section>
 
     <!-- Work Completed -->
-    <div class="form-section">
+    <section class="form-section">
       <div class="section-label">Work Completed This Week</div>
       <div id="workRows"></div>
-      <button class="add-btn" onclick="addWork()">+ Add Item</button>
-    </div>
+      <button class="add-btn" type="button" data-add="work">+ Add Item</button>
+    </section>
 
     <!-- Next Week Priorities -->
-    <div class="form-section">
+    <section class="form-section">
       <div class="section-label">Next Week Priorities</div>
       <div id="priorityRows"></div>
-      <button class="add-btn" onclick="addPriority()">+ Add Priority</button>
-    </div>
+      <button class="add-btn" type="button" data-add="priorities">+ Add Priority</button>
+    </section>
+
+    <!-- Blockers / Risks -->
+    <section class="form-section" data-optional="blockers">
+      <div class="section-label">
+        Blockers / Risks
+        <button class="toggle-sec" type="button" data-toggle="blockers">hide</button>
+      </div>
+      <div class="opt-body">
+        <div id="blockerRows"></div>
+        <button class="add-btn" type="button" data-add="blockers">+ Add Blocker</button>
+      </div>
+    </section>
 
     <!-- Notes -->
-    <div class="form-section">
+    <section class="form-section">
       <div class="section-label">Notes / Observations</div>
-      <div class="field">
-        <textarea id="f-notes" rows="5" placeholder="Optional observations..." oninput="sync()"></textarea>
+      <div class="field has-mic">
+        <textarea id="f-notes" rows="5" data-bind="notes" placeholder="Optional observations…"></textarea>
+        <button class="mic-btn" type="button" data-mic="#f-notes" title="Dictate into this field" aria-label="Dictate notes"></button>
       </div>
-    </div>
+    </section>
 
-  </div><!-- /form-panel -->
+  </aside><!-- /form-panel -->
 
   <!-- ═══════════════════════════════════════ Preview Panel -->
-  <div class="preview-panel">
+  <section class="preview-panel" id="previewPanel" aria-label="Report preview">
     <div class="preview-page" id="preview"></div>
-  </div>
+  </section>
 
 </div><!-- /main -->
 
-<script>
-/* ── State ──────────────────────────────────────────────── */
-const S = {
-  client: '',
-  week: '',
-  preparedBy: 'Victory Velocity',
-  imp:  { w: '', b: '' },
-  clk:  { w: '', b: '' },
-  ctr:  { w: '', b: '' },
-  pos:  { w: '', b: '' },
-  spots: [
-    { q: 'wedding flower donation Vancouver',           engine: 'ChatGPT',    status: 'Not yet', notes: '' },
-    { q: 'wedding flower donation Vancouver',           engine: 'Perplexity', status: 'Not yet', notes: '' },
-    { q: 'what to do with wedding flowers after the wedding', engine: 'ChatGPT', status: 'Not yet', notes: '' },
-    { q: 'flower donation nonprofit Vancouver',         engine: 'Perplexity', status: 'Not yet', notes: '' },
-    { q: 'how to donate event flowers',                 engine: 'Claude',     status: 'Not yet', notes: '' },
-  ],
-  work: [
-    { text: 'Added NonprofitOrganization + LocalBusiness schema', done: false },
-    { text: 'Added FAQ schema (5 questions)',                      done: false },
-    { text: 'Added visible service area section to homepage',      done: false },
-    { text: 'Published blog post #1',                              done: false },
-    { text: 'Published blog post #2',                              done: false },
-    { text: 'Reddit post in r/vancouver or r/weddingplanning',     done: false },
-  ],
-  priorities: [{ text: '' }, { text: '' }, { text: '' }],
-  notes: '',
-};
+<!-- Mobile view switch -->
+<nav class="mobile-tabs" id="mobileTabs" aria-label="View switch">
+  <button type="button" data-tab="form" class="active">Edit</button>
+  <button type="button" data-tab="preview">Preview</button>
+</nav>
 
-/* ── Helpers ────────────────────────────────────────────── */
-function h(str) {
-  return String(str)
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;');
-}
+<!-- Voice dictation HUD -->
+<div class="voice-hud" id="voiceHud" hidden>
+  <span class="voice-dot"></span>
+  <span class="voice-text" id="voiceText">Listening…</span>
+  <button class="voice-stop" type="button" id="voiceStop">Stop</button>
+</div>
 
-function fmtDate(d) {
-  if (!d) return '';
-  const dt = new Date(d + 'T00:00:00');
-  return dt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-}
+<!-- Hidden file input for import -->
+<input type="file" id="importFile" accept="application/json,.json" hidden>
 
-function fmtNum(val) {
-  const n = parseFloat(val);
-  if (isNaN(n)) return '—';
-  return n % 1 === 0 ? n.toLocaleString() : n.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 });
-}
-
-function delta(wVal, bVal) {
-  const w = parseFloat(wVal), b = parseFloat(bVal);
-  if (isNaN(w) || isNaN(b) || bVal === '') return null;
-  const d = w - b;
-  const sign = d >= 0 ? '+' : '';
-  return { d, sign, str: sign + (d % 1 === 0 ? d.toLocaleString() : d.toFixed(2)) };
-}
-
-/* ── Render Form Rows ───────────────────────────────────── */
-function renderSpots() {
-  const engines  = ['ChatGPT', 'Perplexity', 'Claude'];
-  const statuses = ['Not yet', 'Partial', 'Yes'];
-  const tbody = document.getElementById('spotRows');
-  tbody.innerHTML = '';
-  S.spots.forEach((row, i) => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td><input type="text" value="${h(row.q)}" oninput="S.spots[${i}].q=this.value;renderPreview()"></td>
-      <td><select onchange="S.spots[${i}].engine=this.value;renderPreview()">
-        ${engines.map(e => `<option${e===row.engine?' selected':''}>${h(e)}</option>`).join('')}
-      </select></td>
-      <td><select onchange="S.spots[${i}].status=this.value;renderPreview()">
-        ${statuses.map(s => `<option${s===row.status?' selected':''}>${h(s)}</option>`).join('')}
-      </select></td>
-      <td><input type="text" value="${h(row.notes)}" oninput="S.spots[${i}].notes=this.value;renderPreview()"></td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-function renderWork() {
-  const container = document.getElementById('workRows');
-  container.innerHTML = '';
-  S.work.forEach((item, i) => {
-    const d = document.createElement('div');
-    d.className = 'checklist-row';
-    d.innerHTML = `
-      <input type="checkbox" class="check-input" ${item.done ? 'checked' : ''}
-        onchange="S.work[${i}].done=this.checked;renderPreview()">
-      <input type="text" value="${h(item.text)}" placeholder="Task description…"
-        oninput="S.work[${i}].text=this.value;renderPreview()">
-    `;
-    container.appendChild(d);
-  });
-}
-
-function renderPriorities() {
-  const container = document.getElementById('priorityRows');
-  container.innerHTML = '';
-  S.priorities.forEach((item, i) => {
-    const d = document.createElement('div');
-    d.className = 'priority-row';
-    d.innerHTML = `
-      <span class="priority-num">${String(i + 1).padStart(2, '0')}</span>
-      <input type="text" value="${h(item.text)}" placeholder="Priority…"
-        oninput="S.priorities[${i}].text=this.value;renderPreview()">
-    `;
-    container.appendChild(d);
-  });
-}
-
-/* ── Add Row Handlers ───────────────────────────────────── */
-function addSpot() {
-  S.spots.push({ q: '', engine: 'ChatGPT', status: 'Not yet', notes: '' });
-  renderSpots();
-  renderPreview();
-}
-
-function addWork() {
-  S.work.push({ text: '', done: false });
-  renderWork();
-  renderPreview();
-}
-
-function addPriority() {
-  S.priorities.push({ text: '' });
-  renderPriorities();
-  renderPreview();
-}
-
-/* ── Sync Simple Fields → State ─────────────────────────── */
-function sync() {
-  S.client     = document.getElementById('f-client').value;
-  S.week       = document.getElementById('f-week').value;
-  S.preparedBy = document.getElementById('f-preparedby').value;
-  S.imp.w = document.getElementById('f-imp-w').value;
-  S.imp.b = document.getElementById('f-imp-b').value;
-  S.clk.w = document.getElementById('f-clk-w').value;
-  S.clk.b = document.getElementById('f-clk-b').value;
-  S.ctr.w = document.getElementById('f-ctr-w').value;
-  S.ctr.b = document.getElementById('f-ctr-b').value;
-  S.pos.w = document.getElementById('f-pos-w').value;
-  S.pos.b = document.getElementById('f-pos-b').value;
-  S.notes = document.getElementById('f-notes').value;
-  renderPreview();
-}
-
-/* ── Render Preview ─────────────────────────────────────── */
-function renderPreview() {
-  const impD = delta(S.imp.w, S.imp.b);
-  const clkD = delta(S.clk.w, S.clk.b);
-  const ctrD = delta(S.ctr.w, S.ctr.b);
-  const posD = delta(S.pos.w, S.pos.b);
-
-  function metricCard(name, wVal, dlt, suffix = '', note = '') {
-    const display = wVal !== '' ? (suffix ? fmtNum(wVal) + suffix : fmtNum(wVal)) : '—';
-    let deltaHtml = '—';
-    if (dlt) {
-      deltaHtml = dlt.str + (note ? note : '') + ' vs baseline';
-    }
-    return `<div class="pv-metric-card">
-      <div class="pv-metric-name">${name}</div>
-      <div class="pv-metric-value">${h(display)}</div>
-      <div class="pv-metric-delta">${h(deltaHtml)}</div>
-    </div>`;
-  }
-
-  // Position note: lower is better
-  const posNote = posD ? (posD.d < 0 ? ' ↑' : posD.d > 0 ? ' ↓' : '') : '';
-
-  const metricsHTML = `
-    <div class="pv-metrics">
-      ${metricCard('Impressions', S.imp.w, impD)}
-      ${metricCard('Clicks',      S.clk.w, clkD)}
-      ${metricCard('Avg. CTR',    S.ctr.w, ctrD ? { str: ctrD.sign + Math.abs(ctrD.d).toFixed(2) + 'pp', d: ctrD.d } : null, '%')}
-      ${metricCard('Avg. Position', S.pos.w, posD ? { str: posD.str + posNote, d: posD.d } : null)}
-    </div>
-  `;
-
-  // Spot checks
-  const spotsHTML = S.spots.map(row => {
-    const badgeCls = row.status === 'Yes' ? 'badge-yes' : row.status === 'Partial' ? 'badge-part' : 'badge-no';
-    return `<tr>
-      <td style="font-style:italic">${h(row.q) || '<span style="color:rgba(255,255,255,0.15)">—</span>'}</td>
-      <td style="font-family:var(--ui);font-size:9px;letter-spacing:0.1em;color:var(--muted);text-transform:uppercase">${h(row.engine)}</td>
-      <td><span class="status-badge ${badgeCls}">${h(row.status)}</span></td>
-      <td style="color:var(--muted);font-style:italic">${h(row.notes)}</td>
-    </tr>`;
-  }).join('');
-
-  // Work completed
-  const workHTML = S.work.map(item => `
-    <li class="pv-check-item">
-      <div class="pv-check-box ${item.done ? 'done' : ''}">
-        ${item.done ? `<svg width="9" height="9" viewBox="0 0 9 9" fill="none">
-          <polyline points="1,4.5 3.5,7 8,1.5" stroke="#181818" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>` : ''}
-      </div>
-      <span style="${item.done ? 'color:var(--muted)' : ''}">${h(item.text) || '<span style="color:rgba(255,255,255,0.15)">—</span>'}</span>
-    </li>
-  `).join('');
-
-  // Priorities
-  const priHTML = S.priorities.map((item, i) => `
-    <li class="pv-priority-item">
-      <span class="pv-num">${String(i + 1).padStart(2, '0')}</span>
-      <span>${h(item.text) || '<span style="color:rgba(255,255,255,0.15)">—</span>'}</span>
-    </li>
-  `).join('');
-
-  // Notes section
-  const notesSection = S.notes.trim() ? `
-    <div class="pv-section">
-      <div class="pv-section-label">Notes &amp; Observations</div>
-      <p class="pv-notes">${h(S.notes).replace(/\n/g, '<br>')}</p>
-    </div>
-  ` : '';
-
-  const clientDisplay = S.client || 'Client Name';
-  const weekDisplay   = S.week ? 'Week of ' + fmtDate(S.week) : 'Week of —';
-  const prepBy        = S.preparedBy || 'Victory Velocity';
-
-  document.getElementById('preview').innerHTML = `
-    <div class="pv-brand">Victory Velocity</div>
-
-    <div class="pv-report-tag">Weekly Report</div>
-    <h1 class="pv-title">${h(clientDisplay)}</h1>
-    <div class="pv-subtitle">${h(weekDisplay)}</div>
-
-    <div class="pv-section">
-      <div class="pv-section-label">Search Console Metrics</div>
-      ${metricsHTML}
-    </div>
-
-    <div class="pv-section">
-      <div class="pv-section-label">AI Engine Spot Checks</div>
-      <table class="pv-spot">
-        <thead>
-          <tr>
-            <th style="width:40%">Query</th>
-            <th style="width:16%">Engine</th>
-            <th style="width:16%">Status</th>
-            <th>Notes</th>
-          </tr>
-        </thead>
-        <tbody>${spotsHTML}</tbody>
-      </table>
-    </div>
-
-    <div class="pv-section">
-      <div class="pv-section-label">Work Completed This Week</div>
-      <ul class="pv-checklist">${workHTML}</ul>
-    </div>
-
-    <div class="pv-section">
-      <div class="pv-section-label">Next Week Priorities</div>
-      <ul class="pv-priorities">${priHTML}</ul>
-    </div>
-
-    ${notesSection}
-
-    <div class="pv-footer">
-      <span>Prepared by ${h(prepBy)} · victoryvelocity.ca</span>
-      <span>${S.week ? h(fmtDate(S.week)) : ''}</span>
-    </div>
-  `;
-}
-
-/* ── Init ───────────────────────────────────────────────── */
-function init() {
-  renderSpots();
-  renderWork();
-  renderPriorities();
-  renderPreview();
-}
-
-init();
-</script>
+<script src="app.js"></script>
 </body>
 </html>
